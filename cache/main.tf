@@ -115,6 +115,6 @@ resource "aws_elasticache_cluster" "main" {
   security_group_ids = ["${aws_security_group.main.id}"]
 }
 
-output "addresses" {
-  value = ["${aws_elasticache_cluster.main.cache_nodes.*.address}"]
+output "cache_nodes" {
+  value = ["${aws_elasticache_cluster.main.cache_nodes}"]
 }
