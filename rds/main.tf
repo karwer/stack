@@ -91,6 +91,11 @@ variable "publicly_accessible" {
   default     = false
 }
 
+variable "availability_zone" {
+  description = "The preferred availability zone if any"
+  default = ""
+}
+
 variable "vpc_id" {
   description = "The VPC ID to use"
 }
@@ -178,6 +183,7 @@ resource "aws_db_instance" "main" {
   # Network / security
   db_subnet_group_name   = "${aws_db_subnet_group.main.id}"
   vpc_security_group_ids = ["${aws_security_group.main.id}"]
+  availability_zone      = "${var.availability_zone}"
   publicly_accessible    = "${var.publicly_accessible}"
 }
 
