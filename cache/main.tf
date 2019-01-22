@@ -116,5 +116,5 @@ resource "aws_elasticache_cluster" "main" {
 }
 
 output "addresses" {
-  value = "${aws_elasticache_cluster.main.cache_nodes.*.address}"
+  value = ["${aws_elasticache_cluster.main.cache_nodes.*.address}"]
 }
