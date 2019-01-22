@@ -101,7 +101,6 @@ resource "aws_elasticache_cluster" "main" {
   # Cache
   engine         = "${var.engine}"
   engine_version = "${var.engine_version}"
-  name           = "${var.name}"
 
   # Backups / maintenance
   maintenance_window = "${var.maintenance_window}"
