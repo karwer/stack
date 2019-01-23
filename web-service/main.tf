@@ -57,6 +57,7 @@ variable "log_bucket" {
 
 variable "ssl_certificate_id" {
   description = "SSL Certificate ID to use"
+  default = ""
 }
 
 variable "iam_role" {

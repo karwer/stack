@@ -49,13 +49,16 @@ variable "internal_zone_id" {
 }
 
 variable "ssl_certificate_id" {
+  description = "SSL Certificate ID to use"
 }
 
 /**
  * Resources.
  */
 
-resource "aws_elb" "main" {
+resource "aws_elb" "main_with_ssl" {
+  count = "${1 - (var.ssl_certificate_id == "")}"
+
   name = "${var.name}"
 
   internal                  = false
@@ -101,14 +104,61 @@ resource "aws_elb" "main" {
   }
 }
 
+resource "aws_elb" "main_without_ssl" {
+  count = "${0 + (var.ssl_certificate_id == "")}"
+
+  name = "${var.name}"
+
+  internal                  = false
+  cross_zone_load_balancing = true
+  subnets                   = ["${split(",", var.subnet_ids)}"]
+  security_groups           = ["${split(",",var.security_groups)}"]
+
+  idle_timeout                = 30
+  connection_draining         = true
+  connection_draining_timeout = 15
+
+  listener {
+    lb_port           = 80
+    lb_protocol       = "http"
+    instance_port     = "${var.port}"
+    instance_protocol = "http"
+  }
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 5
+    target              = "HTTP:${var.port}${var.healthcheck}"
+    interval            = 30
+  }
+
+  access_logs {
+    bucket = "${var.log_bucket}"
+  }
+
+  tags {
+    Name        = "${var.name}-balancer"
+    Service     = "${var.name}"
+    Environment = "${var.environment}"
+  }
+}
+
+locals {
+  elb_id = "${element(concat(aws_elb.main_with_ssl.*.id, aws_elb.main_without_ssl.*.id), 0)}"
+  elb_name = "${element(concat(aws_elb.main_with_ssl.*.name, aws_elb.main_without_ssl.*.name), 0)}"
+  elb_zone_id = "${element(concat(aws_elb.main_with_ssl.*.zone_id, aws_elb.main_without_ssl.*.zone_id), 0)}"
+  elb_dns_name = "${element(concat(aws_elb.main_with_ssl.*.dns_name, aws_elb.main_without_ssl.*.dns_name), 0)}"
+}
+
 resource "aws_route53_record" "external" {
   zone_id = "${var.external_zone_id}"
   name    = "${var.external_dns_name}"
   type    = "A"
 
   alias {
-    zone_id                = "${aws_elb.main.zone_id}"
-    name                   = "${aws_elb.main.dns_name}"
+    zone_id                = "${local.elb_zone_id}"
+    name                   = "${local.elb_dns_name}"
     evaluate_target_health = false
   }
 }
@@ -119,8 +169,8 @@ resource "aws_route53_record" "internal" {
   type    = "A"
 
   alias {
-    zone_id                = "${aws_elb.main.zone_id}"
-    name                   = "${aws_elb.main.dns_name}"
+    zone_id                = "${local.elb_zone_id}"
+    name                   = "${local.elb_dns_name}"
     evaluate_target_health = false
   }
 }
@@ -131,17 +181,17 @@ resource "aws_route53_record" "internal" {
 
 // The ELB name.
 output "name" {
-  value = "${aws_elb.main.name}"
+  value = "${local.elb_name}"
 }
 
 // The ELB ID.
 output "id" {
-  value = "${aws_elb.main.id}"
+  value = "${local.elb_id}"
 }
 
 // The ELB dns_name.
 output "dns" {
-  value = "${aws_elb.main.dns_name}"
+  value = "${local.elb_dns_name}"
 }
 
 // FQDN built using the zone domain and name (external)
@@ -156,5 +206,5 @@ output "internal_fqdn" {
 
 // The zone id of the ELB
 output "zone_id" {
-  value = "${aws_elb.main.zone_id}"
+  value = "${local.elb_zone_id}"
 }
