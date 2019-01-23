@@ -57,7 +57,7 @@ variable "ssl_certificate_id" {
  */
 
 resource "aws_elb" "main_with_ssl" {
-  count = "${1 - (var.ssl_certificate_id == "")}"
+  count = "${var.ssl_certificate_id != "" ? 1 : 0}"
 
   name = "${var.name}"
 
@@ -105,7 +105,7 @@ resource "aws_elb" "main_with_ssl" {
 }
 
 resource "aws_elb" "main_without_ssl" {
-  count = "${0 + (var.ssl_certificate_id == "")}"
+  count = "${var.ssl_certificate_id == "" ? 1 : 0}"
 
   name = "${var.name}"
 
@@ -152,7 +152,7 @@ locals {
 }
 
 resource "aws_route53_record" "external" {
-  count   = "${1 - (var.external_zone_id == "")}"
+  count   = "${var.external_zone_id != "" ? 1 : 0}"
 
   zone_id = "${var.external_zone_id}"
   name    = "${var.external_dns_name}"
@@ -198,7 +198,7 @@ output "dns" {
 
 // FQDN built using the zone domain and name (external)
 output "external_fqdn" {
-  value = "${aws_route53_record.external.fqdn}"
+  value = "${var.external_zone_id != "" ? element(aws_route53_record.external.*.fqdn, 0) : ""}"
 }
 
 // FQDN built using the zone domain and name (internal)
