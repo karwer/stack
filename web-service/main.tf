@@ -75,7 +75,8 @@ variable "internal_dns_name" {
 }
 
 variable "external_zone_id" {
-  description = "The zone ID to create the record in"
+  description = "The zone ID to create the record in. If not provided the ELB will not be exposed at external_dns_name"
+  default = ""
 }
 
 variable "internal_zone_id" {

@@ -152,6 +152,8 @@ locals {
 }
 
 resource "aws_route53_record" "external" {
+  count   = "${1 - (var.external_zone_id == "")}"
+
   zone_id = "${var.external_zone_id}"
   name    = "${var.external_dns_name}"
   type    = "A"
