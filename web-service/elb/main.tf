@@ -198,7 +198,7 @@ output "dns" {
 
 // FQDN built using the zone domain and name (external)
 output "external_fqdn" {
-  value = "${var.external_zone_id != "" ? element(aws_route53_record.external.*.fqdn, 0) : ""}"
+  value = "${join(", ", aws_route53_record.external.*.fqdn)}"
 }
 
 // FQDN built using the zone domain and name (internal)
