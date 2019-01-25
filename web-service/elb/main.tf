@@ -28,6 +28,26 @@ variable "healthcheck" {
   description = "Healthcheck path"
 }
 
+variable "healthcheck_healthy_threshold" {
+  description = "Healthcheck healthy threshold"
+  default     = 2
+}
+
+variable "healthcheck_unhealthy_threshold" {
+  description = "Healthcheck unhealthy threshold"
+  default     = 2
+}
+
+variable "healthcheck_timeout" {
+  description = "Healthcheck timeout"
+  default     = 5
+}
+
+variable "healthcheck_interval" {
+  description = "Healthcheck interval"
+  default     = 30
+}
+
 variable "log_bucket" {
   description = "S3 bucket name to write ELB logs into"
 }
@@ -126,11 +146,11 @@ resource "aws_elb" "main_without_ssl" {
   }
 
   health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
+    healthy_threshold   = "${var.healthcheck_healthy_threshold}"
+    unhealthy_threshold = "${var.healthcheck_unhealthy_threshold}"
+    timeout             = "${var.healthcheck_timeout}"
     target              = "HTTP:${var.port}${var.healthcheck}"
-    interval            = 30
+    interval            = "${var.healthcheck_interval}"
   }
 
   access_logs {

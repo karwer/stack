@@ -92,6 +92,26 @@ variable "healthcheck" {
   default     = "/"
 }
 
+variable "healthcheck_healthy_threshold" {
+  description = "Healthcheck healthy threshold"
+  default     = 2
+}
+
+variable "healthcheck_unhealthy_threshold" {
+  description = "Healthcheck unhealthy threshold"
+  default     = 2
+}
+
+variable "healthcheck_timeout" {
+  description = "Healthcheck timeout"
+  default     = 5
+}
+
+variable "healthcheck_interval" {
+  description = "Healthcheck interval"
+  default     = 30
+}
+
 variable "container_port" {
   description = "The container port"
   default     = 3000
@@ -186,12 +206,17 @@ module "elb" {
   subnet_ids         = "${var.subnet_ids}"
   external_dns_name  = "${coalesce(var.external_dns_name, module.task.name)}"
   internal_dns_name  = "${coalesce(var.internal_dns_name, module.task.name)}"
-  healthcheck        = "${var.healthcheck}"
   external_zone_id   = "${var.external_zone_id}"
   internal_zone_id   = "${var.internal_zone_id}"
   security_groups    = "${var.security_groups}"
   log_bucket         = "${var.log_bucket}"
   ssl_certificate_id = "${var.ssl_certificate_id}"
+
+  healthcheck                     = "${var.healthcheck}"
+  healthcheck_healthy_threshold   = "${var.healthcheck_healthy_threshold}"
+  healthcheck_unhealthy_threshold = "${var.healthcheck_unhealthy_threshold}"
+  healthcheck_timeout             = "${var.healthcheck_timeout}"
+  healthcheck_interval            = "${var.healthcheck_interval}"
 }
 
 /**
