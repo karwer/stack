@@ -429,7 +429,7 @@ Usage:
 | environment | Environment tag, e.g prod | - | yes |
 | image | The docker image name, e.g nginx | - | yes |
 | name | The service name, if empty the service name is defaulted to the image name | `` | no |
-| version | The docker image version | `latest` | no |
+| image_version | The docker image version | `latest` | no |
 | subnet_ids | Comma separated list of subnet IDs that will be passed to the ELB module | - | yes |
 | security_groups | Comma separated list of security group IDs that will be passed to the ELB module | - | yes |
 | port | The container host port | - | yes |
@@ -544,7 +544,7 @@ Usage:
 | environment | Environment tag, e.g prod | - | yes |
 | image | The docker image name, e.g nginx | - | yes |
 | name | The service name, if empty the service name is defaulted to the image name | `` | no |
-| version | The docker image version | `latest` | no |
+| image_version | The docker image version | `latest` | no |
 | subnet_ids | Comma separated list of subnet IDs that will be passed to the ELB module | - | yes |
 | security_groups | Comma separated list of security group IDs that will be passed to the ELB module | - | yes |
 | port | The container host port | - | yes |
@@ -600,7 +600,7 @@ Usage:
 | environment | Environment tag, e.g prod | - | yes |
 | image | The docker image name, e.g nginx | - | yes |
 | name | The worker name, if empty the service name is defaulted to the image name | `` | no |
-| version | The docker image version | `latest` | no |
+| image_version | The docker image version | `latest` | no |
 | cluster | The cluster name or ARN | - | yes |
 | command | The raw json of the task command | `[]` | no |
 | env_vars | The raw json of the task env vars | `[]` | no |
